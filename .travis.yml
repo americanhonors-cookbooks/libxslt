@@ -1,0 +1,21 @@
+language: ruby
+rvm:
+- 2.1.1
+bundler_args: --without kitchen_vagrant
+before_install:
+- echo -n $EC2_SSH_KEY_CHUNK_{0..25} >> ~/.ssh/id_ec2.base64
+- cat ~/.ssh/id_ec2.base64 | tr -d ' ' | base64 --decode > ~/.ssh/id_ec2
+- gem install bundler --pre
+script:
+# - bundle exec rake travis
+after_script:
+# - bundle exec kitchen destroy
+env:
+  global:
+  - EC2_SSH_KEY_PATH="$HOME/.ssh/id_ec2"
+  - KITCHEN_YAML=.kitchen.cloud.yml
+  matrix:
+  - KITCHEN_INSTANCE="default-ubuntu-1204"
+notifications:
+  email:
+  - techops@americanhonors.org
